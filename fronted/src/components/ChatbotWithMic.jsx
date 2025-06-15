@@ -7,7 +7,7 @@ const BORDER_RADIUS = '22px';
 const scenarios = [
   {
     title: 'Chest Pain (Doctor-Patient Simulation)',
-    description: 'You are a doctor. A patient presents with chest pain. Take a history, ask follow-up questions, and assess the situation.'
+    description: "Doctor... I’ve been feeling this really sharp pain in my chest, and it shoots down my left arm. It started all of a sudden when I was just climbing the stairs at home. I had to stop and catch my breath — I was really short of breath and even felt a bit dizzy. I don’t know what triggered it, but it scared me. I’ve had mild high blood pressure in the past, but nothing like this has ever happened. And just so you know — I don’t have any allergies that I’m aware of. But this chest pain… it just doesn’t feel right."
   },
   {
     title: 'Diabetes Check (Doctor-Patient Simulation)',
@@ -31,23 +31,59 @@ const ChatbotWithMic = () => {
   const [selectedScenario, setSelectedScenario] = useState(0);
   const [showScenario, setShowScenario] = useState(false);
   const [messages, setMessages] = useState([
-    { sender: 'bot', text: 'Welcome! Select a scenario and start your doctor-patient simulation.' },
+    { sender: 'AI patient', text: 'Please suggest' },
   ]);
-  // State for first block
   const [showFollowUpOptions1, setShowFollowUpOptions1] = useState(false);
   const [dialogText1, setDialogText1] = useState('');
-  // State for second block (recommendations)
   const [showRecommendationOptions, setShowRecommendationOptions] = useState(false);
   const [recommendationText, setRecommendationText] = useState('');
 
+  // API call to backend
+  const askPatientAPI = async (questionText) => {
+    try {
+      const response = await fetch('http://localhost:5000/ask-patient', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ question: questionText }),
+      });
+      console.log("request made")
+      const data = await response.json();
+      console.log(data)
+      return data.reply || 'Sorry, I couldn’t understand that.';
+    } catch (error) {
+      console.error('API error:', error);
+      return 'Something went wrong while talking to the patient.';
+    }
+  };
+
   const handleFollowUp1 = () => {
     setShowFollowUpOptions1(true);
+    setDialogText1('');
   };
+
+  const handleStopFollowUp = async () => {
+    if (!dialogText1.trim()) return;
+
+    // Add user message
+    setMessages((prev) => [...prev, { sender: 'user', text: dialogText1 }]);
+
+    // Call Gemini backend
+    const aiResponse = await askPatientAPI(dialogText1);
+
+    // Add AI response
+    setMessages((prev) => [...prev, { sender: 'AI', text: aiResponse }]);
+
+    setDialogText1('');
+  };
+
   const handleRecommendation = () => {
     setShowRecommendationOptions(true);
   };
+
   const handleAssessSkill = () => {
-    alert('Skill Assessment: Based on your questions and responses, your clinical reasoning is strong! (AI would provide a real assessment here).');
+    alert('Skill Assessment: Based on your questions and responses, your clinical reasoning is strong!');
   };
 
   const styles = {
@@ -73,7 +109,7 @@ const ChatbotWithMic = () => {
       flexDirection: 'column',
     },
     explainBtn: {
-      background: accentGradientAlt,
+      background: "#00809D",
       color: '#fff',
       border: 'none',
       borderRadius: '6px',
@@ -127,7 +163,7 @@ const ChatbotWithMic = () => {
       flexDirection: 'column',
     },
     miniBtn: {
-      background: accentGradient,
+      background: "#00809D",
       color: '#fff',
       border: 'none',
       borderRadius: '6px',
@@ -138,7 +174,7 @@ const ChatbotWithMic = () => {
       boxShadow: '0 2px 8px #43e97b55',
     },
     miniBtnAlt: {
-      background: accentGradientAlt,
+      background: "#00809D",
       color: '#fff',
       border: 'none',
       borderRadius: '6px',
@@ -161,7 +197,7 @@ const ChatbotWithMic = () => {
       boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
     },
     skillBtnCenter: {
-      background: accentGradient,
+      background: "#00809D",
       color: '#fff',
       border: 'none',
       borderRadius: '22px',
@@ -193,13 +229,12 @@ const ChatbotWithMic = () => {
         <div style={styles.chatBox}>
           {messages.map((msg, idx) => (
             <div key={idx} style={styles.message(msg.sender)}>
-              <strong>{msg.sender === 'user' ? 'You' : 'Bot'}:</strong> {msg.text}
+              <strong>{msg.sender === 'user' ? 'You' : 'AI'}:</strong> {msg.text}
             </div>
           ))}
         </div>
 
         <div style={styles.twoColRow}>
-          {/* First 45% block: Follow-Up Questions */}
           <div style={styles.col45}>
             <div style={styles.followActions}>
               <button style={styles.miniBtnAlt} onClick={handleFollowUp1}>Ask Follow-Up Questions</button>
@@ -208,7 +243,7 @@ const ChatbotWithMic = () => {
               <>
                 <div style={styles.followActions}>
                   <button style={styles.miniBtn}>Start</button>
-                  <button style={styles.miniBtnAlt}>Stop</button>
+                  <button style={styles.miniBtnAlt} onClick={handleStopFollowUp} >Stop</button>
                 </div>
                 <textarea
                   style={styles.dialogBox}
@@ -219,7 +254,7 @@ const ChatbotWithMic = () => {
               </>
             )}
           </div>
-          {/* Second 45% block: Recommendations */}
+
           <div style={styles.col45}>
             <div style={styles.followActions}>
               <button style={styles.miniBtnAlt} onClick={handleRecommendation}>Show Recommendations</button>
@@ -240,7 +275,7 @@ const ChatbotWithMic = () => {
             )}
           </div>
         </div>
-        {/* Assess Skill button centered below the two blocks */}
+
         <button
           style={styles.skillBtnCenter}
           onClick={handleAssessSkill}

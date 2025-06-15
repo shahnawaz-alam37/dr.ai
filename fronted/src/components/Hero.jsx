@@ -4,7 +4,7 @@ const accentGradient = 'linear-gradient(90deg, #43e97b 0%, #38f9d7 100%)';
 const accentGradientAlt = 'linear-gradient(90deg, #667eea 0%, #764ba2 100%)';
 
 // Use a simple, aesthetic doctor SVG illustration from a reliable CDN
-const premiumDoctorSVG = 'https://www.svgrepo.com/show/331412/doctor.svg'; // fallback if not found: use https://www.svgrepo.com/show/331412/doctor.svg
+const premiumDoctorSVG = '/images/health.svg';
 
 const Hero = () => {
   const styles = {

@@ -248,17 +248,17 @@ const Features = () => {
       description:
         'Speak naturally to Dr.AI using your mic. Powered by Web Speech API and speech-to-text AI.',
     },
-    {
-      icon: '🧠',
-      title: 'AI Study Sprint',
-      description:
-        'Command your study time. AI delivers instant, tailored medical insights for ultimate efficiency.',
-    },
+    // {
+    //   icon: '🧠',
+    //   title: 'AI Study Sprint',
+    //   description:
+    //     'Command your study time. AI delivers instant, tailored medical insights for ultimate efficiency.',
+    // },
   ];
 
   return (
     <section id="features" style={styles.section}>
-      <h2 style={styles.heading}>Features</h2>
+      <h2 style={styles.heading}>AI Patient Simulation</h2>
       <div style={styles.container}>
         {features.map((feature, index) => (
           <div

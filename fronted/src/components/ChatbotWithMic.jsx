@@ -89,7 +89,7 @@ const ChatbotWithMic = () => {
   };
 
   const speakWithElevenLabs = async (text) => {
-  const apiKey = 'sk_42d62cee1dc7fdcfb6a1eb8653933e4f273f0e5efa354107'; // <-- Replace with your ElevenLabs API Key
+  const apiKey = process.env.ELEVENLABS_API; // <-- Replace with your ElevenLabs API Key
   const voiceId = '21m00Tcm4TlvDq8ikWAM'; // Rachel (default voice)
 
   try {
